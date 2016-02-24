@@ -119,10 +119,27 @@
         };
 
         scope.zoomOut = function() {
-          pageFit = false;
-          scale = parseFloat(scale) - 0.2;
-          scope.renderPage(scope.pageToDisplay);
-          return scale;
+          pdfDoc.getPage(scope.pageToDisplay).then(function(page) {
+            var viewport;
+            var pageWidthScale;
+            var renderContext;
+
+            viewport = page.getViewport(1);
+            var clientRect = element[0].getBoundingClientRect();
+            pageWidthScale = clientRect.width / viewport.width;
+
+            if (scale - 0.2 < pageWidthScale) {
+              scale = pageWidthScale;
+            }
+            else {
+              pageFit = false;
+              scale = parseFloat(scale) - 0.2;
+            }
+            scope.renderPage(scope.pageToDisplay);
+            return scale;
+          });
+          
+          return;
         };
 
         scope.fit = function() {
